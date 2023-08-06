@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Simple Product Selling Website</title>
+</head>
+
+<body>
+  <h1>Product Selling Website</h1>
+
+  <form id="productForm">
+    <label for="productName">Product Name:</label>
+    <input type="text" id="productName" required>
+
+    <label for="sellingPrice">Selling Price:</label>
+    <input type="number" id="sellingPrice" required>
+
+    <label for="category">Choose a Category:</label>
+    <select id="category" required>
+      <option value="Electronics">Electronics</option>
+      <option value="Food">Food</option>
+      <option value="Skincare">Skincare</option>
+    </select>
+
+    <button type="button" onclick="addProduct()">Add Product</button>
+  </form>
+
+  <h2>Electronics Items:</h2>
+  <div id="electronicsList">
+    <!-- Electronics products will be displayed  -->
+  </div>
+
+  <h2>Food Items:</h2>
+  <div id="foodList">
+    <!-- Food products will be displayed -->
+  </div>
+
+  <h2>Skincare Items:</h2>
+  <div id="skincareList">
+    <!-- Skincare products will be displayed  -->
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+  <script>
+    function addProduct() {
+      const productName = document.getElementById('productName').value;
+      const sellingPrice = document.getElementById('sellingPrice').value;
+      const category = document.getElementById('category').value;
+
+      const productdetails= {
+        name: productName,
+        price: sellingPrice,
+        category: category
+      };
+
+      ///--uses axios post api call for  use in crudcrud.com api
+      axios.post("https://crudcrud.com/api/02b5f0605c0e477f994e79e1d6f014a3/appoinmentData", productdetails)
+        .then((response) => {
+           
+          console.log(response.data)
+        })
+        .catch((err) => {
+          //document.body.innerHTML = document.body.innerHTML + "<h4> Something went wrong </h4>"
+          console.log(err)
+        })
+   
+
+    
+      const productItem = document.createElement('div');
+      productItem.innerHTML = `
+        <strong>${productName}</strong> - $${sellingPrice}
+        <button type="button" onclick="deleteProduct2(this)">Delete</button>
+        <br>
+      `;
+
+      switch (category) {
+        case 'Electronics':
+          document.getElementById('electronicsList').appendChild(productItem);
+          break;
+        case 'Food':
+          document.getElementById('foodList').appendChild(productItem);
+          break;
+        case 'Skincare':
+          document.getElementById('skincareList').appendChild(productItem);
+          break;
+        default:
+          break;
+      }
+
+      // Clear the input fields after adding the product
+      document.getElementById('productName').value = '';
+      document.getElementById('sellingPrice').value = '';
+    }
+
+    // function deleteProduct2(button){
+    //     const productItem = button.parentElement;
+    //      productItem.remove();
+    // }
+
+    
+    function deleteProduct2(button) {
+        const productItem = button.parentElement;
+         productItem.remove();
+        
+
+      // Send the DELETE request to the server using Axios
+      axios.delete(`https://crudcrud.com/api/ac67aa500de44b08b0b4a1a9af0e4c72/appoinmentData/${id}`)
+        .then(response => {
+          // Handle success, e.g., display a success message on the page
+          console.log(response.data);
+
+          //After successful deletion, remove the product from the browser screen
+          const itemToDelete = document.getElementById(`${category}-${id}`);
+          if (itemToDelete) {
+            itemToDelete.remove();
+          }
+        //addProduct();
+        })
+        .catch(error => {
+          // Handle error, e.g., display an error message on the page
+          console.error(error);
+        });
+    }
+    
+   // fetchproducts();
+  </script>
+</body>
+
+</html>
+
